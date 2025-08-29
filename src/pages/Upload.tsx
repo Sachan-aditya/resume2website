@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
+import PricingCards from '../components/PricingCards';
 import { 
   Upload as UploadIcon, 
   FileText, 
@@ -22,6 +23,7 @@ const Upload = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string>('');
+  const [showPricing, setShowPricing] = useState(false);
   
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -64,28 +66,24 @@ const Upload = () => {
     setUploadProgress(0);
   };
 
-  const simulateUpload = () => {
-    setIsUploading(true);
-    setUploadProgress(0);
+  const handleSelectPlan = (plan: 'basic' | 'pro' | 'enterprise') => {
+    // Store selected plan
+    localStorage.setItem('resume2website_selected_plan', plan);
     
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          // Store the uploaded file info for processing page
-          localStorage.setItem('resume2website_uploaded_file', JSON.stringify({
-            name: uploadedFile?.name,
-            size: uploadedFile?.size,
-            type: uploadedFile?.type,
-            uploadedAt: new Date().toISOString()
-          }));
-          navigate('/processing');
-          return 100;
-        }
-        return prev + Math.random() * 15;
-      });
-    }, 200);
+    // Store the uploaded file info for processing page
+    localStorage.setItem('resume2website_uploaded_file', JSON.stringify({
+      name: uploadedFile?.name,
+      size: uploadedFile?.size,
+      type: uploadedFile?.type,
+      uploadedAt: new Date().toISOString()
+    }));
+    
+    toast.success(`${plan.charAt(0).toUpperCase() + plan.slice(1)} plan selected!`);
+    navigate('/processing');
+  };
+
+  const handleContinueClick = () => {
+    setShowPricing(true);
   };
 
   const formatFileSize = (bytes: number) => {
@@ -307,8 +305,8 @@ const Upload = () => {
             </Card>
           </motion.div>
 
-          {/* Continue Button */}
-          {uploadedFile && !isUploading && (
+          {/* Continue Button or Pricing */}
+          {uploadedFile && !isUploading && !showPricing && (
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -316,13 +314,42 @@ const Upload = () => {
               className="text-center"
             >
               <Button 
-                onClick={simulateUpload}
+                onClick={handleContinueClick}
                 size="lg" 
                 className="btn-primary text-lg px-8"
               >
-                Continue to Processing
+                Continue to Pricing
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
+            </motion.div>
+          )}
+
+          {/* Pricing Cards */}
+          {showPricing && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mt-8"
+            >
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold mb-4">Choose Your Plan</h2>
+                <p className="text-xl text-muted-foreground">
+                  Select the plan that best fits your needs
+                </p>
+              </div>
+              
+              <PricingCards onSelectPlan={handleSelectPlan} />
+              
+              <div className="text-center mt-6">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setShowPricing(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  ← Back to Upload
+                </Button>
+              </div>
             </motion.div>
           )}
         </div>
