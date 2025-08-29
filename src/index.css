@@ -18,15 +18,15 @@
     --popover: 0 0% 100%;
     --popover-foreground: 210 22% 22%;
 
-    /* Primary coral brand color */
-    --primary: 0 69% 70%;  /* #FF6B6B coral */
+    /* Primary blue brand color */
+    --primary: 214 95% 55%;  /* #2563EB blue */
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 0 69% 65%;
+    --primary-hover: 214 95% 50%;
     
-    /* Secondary teal accent */
-    --secondary: 169 69% 60%;  /* #4ECDC4 teal */
-    --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 169 69% 55%;
+    /* Secondary light blue accent */
+    --secondary: 204 100% 97%;  /* Light blue */
+    --secondary-foreground: 214 95% 55%;
+    --secondary-hover: 204 100% 95%;
 
     /* Neutral grays */
     --muted: 210 40% 96%;
@@ -53,8 +53,8 @@
     --radius: 0.5rem;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #8B5CF6, #EC4899, #F59E0B);
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 98%));
+    --gradient-primary: linear-gradient(135deg, #2563EB, #3B82F6, #60A5FA);
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(214 100% 98%));
     
     /* Shadows */
     --shadow-soft: 0 4px 6px -1px hsl(0 0% 0% / 0.1);
@@ -98,13 +98,13 @@
     --popover-foreground: 210 40% 98%;
 
     /* Dark mode brand colors */
-    --primary: 0 69% 70%;
+    --primary: 214 95% 65%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 0 69% 75%;
+    --primary-hover: 214 95% 70%;
 
-    --secondary: 169 69% 60%;
-    --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 169 69% 65%;
+    --secondary: 214 32% 17%;
+    --secondary-foreground: 214 95% 65%;
+    --secondary-hover: 214 32% 20%;
 
     /* Dark neutrals */
     --muted: 217 33% 17%;
@@ -128,8 +128,8 @@
     --ring: 0 69% 70%;
     
     /* Dark gradients */
-    --gradient-primary: linear-gradient(135deg, #8B5CF6, #EC4899, #F59E0B);
-    --gradient-subtle: linear-gradient(180deg, hsl(210 22% 11%), hsl(217 33% 15%));
+    --gradient-primary: linear-gradient(135deg, #2563EB, #3B82F6, #60A5FA);
+    --gradient-subtle: linear-gradient(180deg, hsl(210 22% 11%), hsl(214 32% 15%));
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

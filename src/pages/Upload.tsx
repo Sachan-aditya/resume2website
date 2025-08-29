@@ -82,8 +82,13 @@ const Upload = () => {
     navigate('/processing');
   };
 
-  const handleContinueClick = () => {
-    setShowPricing(true);
+  const handleContinue = () => {
+    if (!uploadedFile) {
+      toast.error('Please select a file first');
+      return;
+    }
+    
+    navigate('/pricing');
   };
 
   const formatFileSize = (bytes: number) => {
@@ -306,7 +311,7 @@ const Upload = () => {
           </motion.div>
 
           {/* Continue Button or Pricing */}
-          {uploadedFile && !isUploading && !showPricing && (
+          {uploadedFile && !isUploading && (
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -314,42 +319,13 @@ const Upload = () => {
               className="text-center"
             >
               <Button 
-                onClick={handleContinueClick}
+                onClick={handleContinue}
                 size="lg" 
                 className="btn-primary text-lg px-8"
               >
                 Continue to Pricing
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
-            </motion.div>
-          )}
-
-          {/* Pricing Cards */}
-          {showPricing && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mt-8"
-            >
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold mb-4">Choose Your Plan</h2>
-                <p className="text-xl text-muted-foreground">
-                  Select the plan that best fits your needs
-                </p>
-              </div>
-              
-              <PricingCards onSelectPlan={handleSelectPlan} />
-              
-              <div className="text-center mt-6">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => setShowPricing(false)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  ← Back to Upload
-                </Button>
-              </div>
             </motion.div>
           )}
         </div>

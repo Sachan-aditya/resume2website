@@ -1,92 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useAuth } from '../contexts/AuthContext';
-import { toast } from 'react-hot-toast';
+import { Card, CardContent } from '@/components/ui/card';
 import { 
   CheckCircle, 
   ExternalLink, 
-  Copy, 
-  Download,
-  Share2,
-  BarChart3,
-  Plus,
+  Share2, 
+  Download, 
+  Copy,
   Twitter,
   Linkedin,
   Facebook,
-  QrCode
+  QrCode,
+  BarChart3,
+  Sparkles,
+  Trophy,
+  Zap,
+  Plus
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Success = () => {
   const [websiteUrl, setWebsiteUrl] = useState('');
-  const [resumeData, setResumeData] = useState<any>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState('');
-  const { user } = useAuth();
+  const [userData, setUserData] = useState<any>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user completed the flow
-    const customizations = localStorage.getItem('resume2website_customizations');
-    const parsedData = localStorage.getItem('resume2website_parsed_data');
+    // Get user data and generate website URL
+    const user = JSON.parse(localStorage.getItem('resume2website_user') || '{}');
+    setUserData(user);
     
-    if (!customizations || !parsedData) {
-      navigate('/dashboard');
-      return;
-    }
+    // Generate a mock website URL
+    const username = user.name?.toLowerCase().replace(/\s+/g, '') || 'user';
+    setWebsiteUrl(`https://${username}.resume2website.com`);
     
-    try {
-      const customData = JSON.parse(customizations);
-      const userData = JSON.parse(parsedData);
-      
-      setResumeData(userData);
-      setSelectedTemplate(customData.template);
-      
-      // Generate website URL
-      const urlName = userData.personalInfo.name.toLowerCase().replace(/\s+/g, '-');
-      setWebsiteUrl(`${urlName}.resume2website.com`);
-      
-      // Save website to user's collection
-      const existingWebsites = JSON.parse(localStorage.getItem('user_websites') || '[]');
-      const newWebsite = {
-        id: Date.now().toString(),
-        name: `${userData.personalInfo.name} - ${userData.personalInfo.title}`,
-        url: `${urlName}.resume2website.com`,
-        template: customData.template,
-        status: 'live',
-        createdAt: new Date().toISOString(),
-        views: Math.floor(Math.random() * 50) + 10 // Mock initial views
-      };
-      
-      existingWebsites.push(newWebsite);
-      localStorage.setItem('user_websites', JSON.stringify(existingWebsites));
-      
-    } catch (error) {
-      console.error('Error loading success data:', error);
-      navigate('/dashboard');
-    }
-  }, [navigate]);
+    // Trigger celebration animation after a short delay
+    setTimeout(() => {
+      setShowCelebration(true);
+    }, 500);
+  }, []);
 
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
       toast.success('URL copied to clipboard!');
     } catch (error) {
-      // Fallback for browsers that don't support clipboard API
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
       toast.success('URL copied to clipboard!');
     }
   };
 
   const shareOnSocial = (platform: string) => {
-    const url = `https://${websiteUrl}`;
+    const url = websiteUrl;
     const text = `Check out my new professional website: ${url}`;
     
     let shareUrl = '';
@@ -113,7 +79,7 @@ const Success = () => {
     toast.success('Website HTML package will be ready for download shortly!');
   };
 
-  if (!resumeData) {
+  if (!userData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
@@ -122,317 +88,262 @@ const Success = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-gradient-subtle relative overflow-hidden">
+      {/* Celebration Elements */}
+      {showCelebration && (
+        <>
+          {/* Floating particles */}
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 rounded-full bg-primary"
+              initial={{ 
+                x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0, 
+                y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0,
+                scale: 0 
+              }}
+              animate={{ 
+                x: typeof window !== 'undefined' ? Math.random() * window.innerWidth : 0,
+                y: typeof window !== 'undefined' ? Math.random() * window.innerHeight : 0,
+                scale: [0, 1, 0]
+              }}
+              transition={{ 
+                duration: 2,
+                delay: i * 0.1,
+                ease: "easeOut"
+              }}
+            />
+          ))}
+          
+          {/* Confetti burst */}
+          {[...Array(30)].map((_, i) => (
+            <motion.div
+              key={`confetti-${i}`}
+              className="absolute w-3 h-3 rounded-full"
+              style={{ 
+                backgroundColor: ['#2563EB', '#3B82F6', '#60A5FA', '#DBEAFE'][i % 4]
+              }}
+              initial={{ 
+                x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0, 
+                y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0,
+                rotate: 0
+              }}
+              animate={{ 
+                x: typeof window !== 'undefined' ? window.innerWidth / 2 + (Math.random() - 0.5) * 800 : 0,
+                y: typeof window !== 'undefined' ? window.innerHeight / 2 + (Math.random() - 0.5) * 600 : 0,
+                rotate: 360
+              }}
+              transition={{ 
+                duration: 3,
+                delay: i * 0.05,
+                ease: "easeOut"
+              }}
+            />
+          ))}
+        </>
+      )}
+
       {/* Header */}
-      <header className="border-b border-border bg-background/80 backdrop-blur-sm">
+      <header className="border-b border-border bg-background/80 backdrop-blur-sm relative z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/dashboard" className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               Resume2Website
             </Link>
             
-            <div className="flex items-center gap-4">
-              <Link to="/dashboard">
-                <Button variant="outline">Back to Dashboard</Button>
-              </Link>
-              <div className="text-sm text-muted-foreground">
-                {user?.name}
-              </div>
-            </div>
+            <Button 
+              onClick={() => navigate('/dashboard')}
+              variant="outline"
+            >
+              Back to Dashboard
+            </Button>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Success Animation */}
+      <div className="container mx-auto px-4 py-12 relative z-10">
+        {/* Success Header */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
         >
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-success text-success-foreground mb-6">
-            <CheckCircle className="h-12 w-12" />
-          </div>
-          
           <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ 
+              delay: 0.3, 
+              type: "spring", 
+              stiffness: 200,
+              damping: 10
+            }}
+            className="relative mx-auto mb-6"
+          >
+            <div className="w-24 h-24 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center">
+              <Trophy className="h-12 w-12 text-white" />
+            </div>
+            
+            {/* Sparkle effects */}
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-0"
+            >
+              {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2"
+                  style={{
+                    top: '50%',
+                    left: '50%',
+                    transform: `rotate(${angle}deg) translateY(-40px)`,
+                  }}
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
+                  transition={{ 
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: i * 0.2
+                  }}
+                >
+                  <Sparkles className="h-2 w-2 text-primary" />
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+          
+          <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
+            transition={{ delay: 0.6 }}
+            className="text-5xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent"
           >
-            <h1 className="text-4xl lg:text-6xl font-bold mb-4">
-              🎉 Congratulations!
-            </h1>
-            <p className="text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto">
-              Your professional website is now live and ready to impress employers!
-            </p>
-          </motion.div>
+            🎉 Website Deployed!
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="text-xl text-muted-foreground max-w-2xl mx-auto"
+          >
+            Your professional website is now live and ready to impress. Share it with the world and watch your career soar!
+          </motion.p>
         </motion.div>
 
-        <div className="max-w-4xl mx-auto grid lg:grid-cols-2 gap-8">
-          {/* Website Details */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-            className="space-y-6"
-          >
-            {/* Website URL */}
-            <Card className="card-elegant">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ExternalLink className="h-5 w-5" />
-                  Your Website is Live!
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 bg-muted/50 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <p className="text-sm text-muted-foreground mb-1">Website URL</p>
-                      <p className="font-mono text-lg font-semibold text-primary break-all">
-                        {websiteUrl}
-                      </p>
-                    </div>
-                    <div className="flex gap-2 ml-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => copyToClipboard(`https://${websiteUrl}`)}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => window.open(`https://${websiteUrl}`, '_blank')}
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+        {/* Website URL Display */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0 }}
+          className="max-w-2xl mx-auto mb-12"
+        >
+          <Card className="card-elegant text-center">
+            <CardContent className="p-8">
+              <h3 className="text-2xl font-bold mb-4 flex items-center justify-center gap-2">
+                <Zap className="h-6 w-6 text-primary" />
+                Your Website is Live!
+              </h3>
+              
+              <div className="bg-primary/5 rounded-lg p-6 mb-6">
+                <p className="text-sm text-muted-foreground mb-2">Website URL</p>
+                <p className="text-2xl font-bold text-primary break-all mb-4">{websiteUrl}</p>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-muted/30 rounded-lg">
-                    <p className="text-sm text-muted-foreground">Status</p>
-                    <Badge className="bg-success text-success-foreground mt-1">
-                      Live & Active
-                    </Badge>
-                  </div>
-                  <div className="text-center p-3 bg-muted/30 rounded-lg">
-                    <p className="text-sm text-muted-foreground">Template</p>
-                    <p className="font-medium capitalize mt-1">
-                      {selectedTemplate.replace('-', ' ')}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* QR Code */}
-            <Card className="card-elegant">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <QrCode className="h-5 w-5" />
-                  Mobile Sharing
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <div className="w-32 h-32 bg-muted rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <QrCode className="h-16 w-16 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Scan to share your website on mobile devices
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Analytics Preview */}
-            <Card className="card-elegant">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Analytics Preview
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-primary">0</p>
-                    <p className="text-sm text-muted-foreground">Total Views</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-secondary">0</p>
-                    <p className="text-sm text-muted-foreground">This Week</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-warning">0</p>
-                    <p className="text-sm text-muted-foreground">Today</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Actions */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-            className="space-y-6"
-          >
-            {/* Share Your Website */}
-            <Card className="card-elegant">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Share2 className="h-5 w-5" />
-                  Share Your Website
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground">
-                  Let the world know about your new professional website!
-                </p>
-                
-                <div className="grid grid-cols-3 gap-3">
-                  <Button
+                <div className="flex gap-3 justify-center">
+                  <Button 
+                    onClick={() => copyToClipboard(websiteUrl)}
                     variant="outline"
-                    onClick={() => shareOnSocial('linkedin')}
-                    className="flex flex-col gap-2 h-16"
                   >
-                    <Linkedin className="h-5 w-5" />
-                    <span className="text-xs">LinkedIn</span>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy URL
                   </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => shareOnSocial('twitter')}
-                    className="flex flex-col gap-2 h-16"
+                  <Button 
+                    onClick={() => window.open(websiteUrl, '_blank')}
+                    className="bg-primary hover:bg-primary/90"
                   >
-                    <Twitter className="h-5 w-5" />
-                    <span className="text-xs">Twitter</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => shareOnSocial('facebook')}
-                    className="flex flex-col gap-2 h-16"
-                  >
-                    <Facebook className="h-5 w-5" />
-                    <span className="text-xs">Facebook</span>
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Visit Website
                   </Button>
                 </div>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => copyToClipboard(`Check out my professional website: https://${websiteUrl}`)}
-                >
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy Sharing Message
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Additional Options */}
-            <Card className="card-elegant">
-              <CardHeader>
-                <CardTitle>Additional Options</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={downloadHTML}
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download HTML Package
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => navigate('/preview')}
-                >
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  View Analytics Dashboard
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start"
-                  onClick={() => navigate('/preview')}
-                >
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  Customize Further
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Create Another Website */}
-            <Card className="card-elegant gradient-primary text-white">
-              <CardContent className="p-6 text-center">
-                <h3 className="text-xl font-semibold mb-2">Create Another Website?</h3>
-                <p className="text-white/90 mb-4">
-                  Build websites for different roles or update your existing one
-                </p>
-                <Link to="/upload">
-                  <Button size="lg" variant="secondary">
-                    <Plus className="h-5 w-5 mr-2" />
-                    Create New Website
+              </div>
+              
+              {/* Social Sharing */}
+              <div>
+                <h4 className="font-semibold mb-3">Share Your Success</h4>
+                <div className="flex gap-3 justify-center">
+                  <Button variant="outline" size="sm" onClick={() => shareOnSocial('linkedin')}>
+                    <Linkedin className="h-4 w-4" />
                   </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+                  <Button variant="outline" size="sm" onClick={() => shareOnSocial('twitter')}>
+                    <Twitter className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => shareOnSocial('facebook')}>
+                    <Facebook className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Next Steps */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mt-12"
+          transition={{ delay: 1.2 }}
+          className="max-w-4xl mx-auto grid md:grid-cols-3 gap-6"
         >
-          <Card className="card-elegant max-w-3xl mx-auto">
-            <CardHeader>
-              <CardTitle className="text-center">What's Next?</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                    <Share2 className="h-6 w-6 text-primary" />
-                  </div>
-                  <h4 className="font-semibold mb-2">Share Your Website</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Add your new URL to your email signature, LinkedIn profile, and job applications
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-3">
-                    <BarChart3 className="h-6 w-6 text-secondary" />
-                  </div>
-                  <h4 className="font-semibold mb-2">Monitor Performance</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Track visitors and engagement to optimize your professional presence
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center mx-auto mb-3">
-                    <Plus className="h-6 w-6 text-warning" />
-                  </div>
-                  <h4 className="font-semibold mb-2">Keep Building</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Create specialized websites for different roles or industries
-                  </p>
-                </div>
+          <Card className="card-elegant text-center">
+            <CardContent className="p-6">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Share2 className="h-6 w-6 text-primary" />
               </div>
+              <h3 className="font-bold mb-2">Share Your Website</h3>
+              <p className="text-sm text-muted-foreground">
+                Add your URL to your email signature, LinkedIn profile, and job applications
+              </p>
             </CardContent>
           </Card>
+          
+          <Card className="card-elegant text-center">
+            <CardContent className="p-6">
+              <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-4">
+                <BarChart3 className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-bold mb-2">Monitor Performance</h3>
+              <p className="text-sm text-muted-foreground">
+                Track visitors and engagement to optimize your professional presence
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card className="card-elegant text-center">
+            <CardContent className="p-6">
+              <div className="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center mx-auto mb-4">
+                <Plus className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-bold mb-2">Keep Building</h3>
+              <p className="text-sm text-muted-foreground">
+                Create specialized websites for different roles or industries
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+        
+        {/* Create Another Website */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.4 }}
+          className="text-center mt-12"
+        >
+          <Button 
+            onClick={() => navigate('/upload')}
+            size="lg" 
+            className="bg-primary hover:bg-primary/90 text-lg px-8"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Create Another Website
+          </Button>
         </motion.div>
       </div>
     </div>

@@ -17,6 +17,7 @@ import Processing from "./pages/Processing";
 import Templates from "./pages/Templates";
 import Preview from "./pages/Preview";
 import Success from "./pages/Success";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,11 @@ const App = () => (
             <Route path="/success" element={
               <ProtectedRoute>
                 <Success />
+              </ProtectedRoute>
+            } />
+            <Route path="/pricing" element={
+              <ProtectedRoute>
+                <Pricing />
               </ProtectedRoute>
             } />
             
